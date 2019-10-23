@@ -14,7 +14,7 @@ function drawHangman(){
 }
 
 while(true){
-	console.log(drawHangman());
+	console.log(wordBank);
 	//const letter = prompt.question("Please guess a letter: ");
 	break;
 }
