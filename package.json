@@ -1,0 +1,16 @@
+{
+	"name": "Hangman",
+	"version": "1.0.0",
+	"engine": {
+		"node": "12.13.0"
+	},
+	"main": "index.js",
+	"author": "Roberto Morado",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/roramigator/Hangman.git"
+	},
+	"dependencies": {
+		"readline-sync": "^1.4.10"
+	}
+}
