@@ -12,8 +12,9 @@ let rounds = 0;
 let wins = 0;
 
 /** FLAGS & UI */
+const clearScreen ="\u001B[2J\u001B[0;0f";
 const welcomeFlag =
-  "\n┬ ┬┌─┐┌┐┌┌─┐┌┬┐┌─┐┌┐┌\n├─┤├─┤││││ ┬│││├─┤│││\n┴ ┴┴ ┴┘└┘└─┘┴ ┴┴ ┴┘└┘";
+  "┬ ┬┌─┐┌┐┌┌─┐┌┬┐┌─┐┌┐┌\n├─┤├─┤││││ ┬│││├─┤│││\n┴ ┴┴ ┴┘└┘└─┘┴ ┴┴ ┴┘└┘";
 const headerGUI =
   "\n╭➞\x1b[31m Ctrl+C\x1b[0m: Exit game.\n┼───────────────────┬\n";
 const footerFlat = "┴───────────────────┴";
@@ -134,6 +135,7 @@ const matchWord = (letter, word) => {
  */
 function gameLoop() {
   while (true) {
+    print(welcomeFlag);
     print(headerGUI);
 
     if (wordFounded(hiddenWord)) {
@@ -149,6 +151,8 @@ function gameLoop() {
       countGuesses = 1;
       printScore();
       print(footerFlat);
+      prompt.question('Press ENTER to play again.', {hideEchoBack: true, mask: ''});
+      print(clearScreen);
       gameLoop();
       /** */
     } else {
@@ -168,12 +172,15 @@ function gameLoop() {
       rounds += 1;
       break;
     }
+    print(clearScreen);
   }
 }
 
 /** GAME LOOP */
-print(welcomeFlag);
+print(clearScreen);
 gameLoop();
+print(clearScreen);
+print(welcomeFlag);
 print(headerGUI);
 print(apologyFlag);
 print("\t\x1b[34m " + mysteryWord.toUpperCase() + "\x1b[0m\n");
