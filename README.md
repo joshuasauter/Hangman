@@ -10,7 +10,9 @@ Simple hangman game played against the computer, written in `Node.js`
 
 ---
 
-![preview](https://github.com/roramigator/Hangman/blob/master/preview/hangman.png)
+<p align="center">
+  <img src="https://github.com/roramigator/Hangman/blob/master/preview/hangman.png" alt="preview"/>
+</p>
 
 ### Rules
 
