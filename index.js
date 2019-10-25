@@ -19,7 +19,6 @@ const headerGUI =
 const footerFlat = "┴───────────────────┴";
 const footerGuess = "┼───────────────────┴";
 const inputFlag = "╰➞ Guess: ";
-const boundariesFlag = "\n\x1b[33mInsert one letter!\x1b[0m\n";
 const guiMan = [
   "\x1b[5m\x1b[32m😎\x1b[0m",
   "\x1b[32m😄\x1b[0m",
@@ -69,10 +68,13 @@ const printScore = () => {
  */
 const askForInput = () => {
   const input = prompt.question(inputFlag);
-  if (input.length === 1) {
-    return input.toLowerCase();
+  if (/[a-zA-Z]/.test(input)) {
+    if (input.length === 1) {
+      return input.toLowerCase();
+    } else {
+      return input[0].toLowerCase();
+    }
   } else {
-    print(boundariesFlag);
     askForInput();
   }
 };
