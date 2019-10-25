@@ -12,10 +12,13 @@ let rounds = 0;
 let wins = 0;
 
 /** FLAGS & UI */
-const welcomeFlag = "\nWELCOME TO HANGMAN!\n";
-const stopFlag = "\n\nPress \x1b[31mCtrl+C\x1b[0m to exit.\n";
-const inputFlag = "Please guess a letter: ";
-const byeFlag = "Thank you for playing!";
+const welcomeFlag =
+  "\n┬ ┬┌─┐┌┐┌┌─┐┌┬┐┌─┐┌┐┌\n├─┤├─┤││││ ┬│││├─┤│││\n┴ ┴┴ ┴┘└┘└─┘┴ ┴┴ ┴┘└┘";
+const headerGUI =
+  "\n╭➞\x1b[31m Ctrl+C\x1b[0m: Exit game.\n┼───────────────────┬\n";
+const footerFlat = "┴───────────────────┴";
+const footerGuess = "┼───────────────────┴";
+const inputFlag = "╰➞ Guess: ";
 const boundariesFlag = "\n\x1b[33mInsert one letter!\x1b[0m\n";
 const guiMan = [
   "\x1b[5m\x1b[32m😎\x1b[0m",
@@ -27,7 +30,8 @@ const guiMan = [
   "\x1b[31m😭\x1b[0m",
   "\x1b[31m😵\x1b[0m"
 ];
-const congratulationsFlag = "You founded!" + "\t" + guiMan[0] + "\n";
+const congratulationsFlag = "  You founded!" + "\t" + guiMan[0] + "\n";
+const apologyFlag = "  Try again!" + "\t" + guiMan[7] + "\n";
 
 /** FUNCTIONS */
 
@@ -38,9 +42,25 @@ const congratulationsFlag = "You founded!" + "\t" + guiMan[0] + "\n";
  *  @param {string} message; Will be printed in the screen.
  *
  */
-const print = message => console.log(message);
+const print = message => console.table(message);
 
-/** askForInput
+/** printScore
+ *
+ *  Print the rounds and the wins
+ *
+ */
+const printScore = () => {
+  print(
+    "  Rounds:\x1b[33m " +
+      rounds +
+      "\x1b[0m" +
+      "; Wins:\x1b[32m " +
+      wins +
+      "\x1b[0m\n"
+  );
+};
+
+/** askForInput (#)
  *
  *  Using readline-sync library, reads input from the player and conditions a one character string.
  *
@@ -104,59 +124,56 @@ const matchWord = (letter, word) => {
   return;
 };
 
-/** GAME LOOP */
-print(welcomeFlag);
+/** Game
+ *
+ *  Main game functionality; prints instruction/informative flags, resets the game if player wins,
+ *  finds the player's letter in the hidenWord (if exist), keep record of the guesse made by the player.
+ *
+ */
+function gameLoop() {
+  while (true) {
+    print(headerGUI);
 
-while (true) {
-  print(stopFlag);
+    if (wordFounded(hiddenWord)) {
+      print(congratulationsFlag);
+      print("\t\x1b[34m" + hiddenWord.join(" ").toUpperCase() + "\x1b[0m\n");
 
-  if (wordFounded(hiddenWord)) {
-    print(congratulationsFlag);
-
-    /** RESET GAME */
-    findWord = Math.floor(Math.random() * maxWords);
-    mysteryWord = wordBank[findWord];
-    hiddenWord = mysteryWord.split("").map(() => "*");
-    rounds += 1;
-    wins += 1;
-    countGuesses = 1;
-    print(
-      "Rounds:\x1b[33m " +
-        rounds +
-        "\x1b[0m" +
-        "; Wins:\x1b[32m " +
-        wins +
-        "\x1b[0m"
-    );
-    print(stopFlag);
-    print("\nStart again!\n");
-    print(
-      hiddenWord.join(" ").toUpperCase() + "\t" + guiMan[countGuesses] + "\n"
-    );
-    /** */
-  } else {
-    print(
-      hiddenWord.join(" ").toUpperCase() + "\t" + guiMan[countGuesses] + "\n"
-    );
-  }
-
-  if (countGuesses <= 6) {
-    const letter = askForInput();
-    matchWord(letter, hiddenWord);
-  } else {
-    rounds += 1;
-    break;
+      /** RESET GAME */
+      findWord = Math.floor(Math.random() * maxWords);
+      mysteryWord = wordBank[findWord];
+      hiddenWord = mysteryWord.split("").map(() => "*");
+      rounds += 1;
+      wins += 1;
+      countGuesses = 1;
+      printScore();
+      print(footerFlat);
+      gameLoop();
+      /** */
+    } else {
+      print(
+        "  " +
+          hiddenWord.join(" ").toUpperCase() +
+          "\t" +
+          guiMan[countGuesses] +
+          "\n"
+      );
+    }
+    print(footerGuess);
+    if (countGuesses <= 6) {
+      const letter = askForInput();
+      matchWord(letter, hiddenWord);
+    } else {
+      rounds += 1;
+      break;
+    }
   }
 }
 
-print("\nTry again!");
-print("The word was\x1b[34m " + mysteryWord.toUpperCase() + "\x1b[0m\n");
-print(
-  "Rounds:\x1b[33m " +
-    rounds +
-    "\x1b[0m" +
-    "; Wins:\x1b[32m " +
-    wins +
-    "\x1b[0m"
-);
-print(byeFlag + "\n");
+/** GAME LOOP */
+print(welcomeFlag);
+gameLoop();
+print(headerGUI);
+print(apologyFlag);
+print("\t\x1b[34m " + mysteryWord.toUpperCase() + "\x1b[0m\n");
+printScore();
+print(footerFlat);
