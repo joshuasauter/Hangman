@@ -10,6 +10,8 @@ Simple hangman game played against the computer, written in `Node.js`
 
 ---
 
+![preview](https://github.com/roramigator/Hangman/blob/master/preview/hangman.png)
+
 ### Rules
 
 - The game continues until the player loses (rounds).
