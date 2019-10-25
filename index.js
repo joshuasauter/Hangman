@@ -30,7 +30,7 @@ const guiMan = [
   "\x1b[31m😭\x1b[0m",
   "\x1b[31m😵\x1b[0m"
 ];
-const congratulationsFlag = "  You founded!" + "\t" + guiMan[0] + "\n";
+const congratulationsFlag = "  You found it!" + "\t" + guiMan[0] + "\n";
 const apologyFlag = "  Try again!" + "\t" + guiMan[7] + "\n";
 
 /** FUNCTIONS */
