@@ -27,6 +27,6 @@ UI will display the number of games played and games won.
 
 - Player may enter any character but just letters will be counted as valid.
 - In case the player enters more than one letter, just the first letter will be counted as valid.
-- The player can exits at any time using `CTRL+C`.
+- The player can exit at any time using `CTRL+C`.
 
 [readline-sync](https://www.npmjs.com/package/readline-sync)
