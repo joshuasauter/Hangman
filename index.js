@@ -42,7 +42,7 @@ const apologyFlag = "  Try again!" + "\t" + guiMan[7] + "\n";
  *  @param {string} message; Will be printed in the screen.
  *
  */
-const print = message => console.table(message);
+const print = message => console.log(message);
 
 /** printScore
  *
