@@ -4,22 +4,17 @@ const wordBank = require("./word-bank.json");
 
 /** INITIALIZATION */
 const maxWords = wordBank.length;
-let findWord = Math.floor(Math.random() * maxWords);
-let mysteryWord = wordBank[findWord];
-let hiddenWord = mysteryWord.split("").map(() => "*");
-let countGuesses = 1;
+let findWord, mysteryWord, hiddenWord, countGuesses;
 let rounds = 0;
 let wins = 0;
 
 /** FLAGS & UI */
-const clearScreen ="\u001B[2J\u001B[0;0f";
-const welcomeFlag =
-  "┬ ┬┌─┐┌┐┌┌─┐┌┬┐┌─┐┌┐┌\n├─┤├─┤││││ ┬│││├─┤│││\n┴ ┴┴ ┴┘└┘└─┘┴ ┴┴ ┴┘└┘";
-const headerGUI =
-  "\n╭➞\x1b[31m Ctrl+C\x1b[0m: Exit game.\n┼───────────────────┬\n";
-const footerFlat = "┴───────────────────┴";
-const footerGuess = "┼───────────────────┴";
+const clearScreen = "\u001B[2J\u001B[0;0f";
+const headerBox = "┬ ┬┌─┐┌┐┌┌─┐┌┬┐┌─┐┌┐┌\n├─┤├─┤││││ ┬│││├─┤│││\n┴ ┴┴ ┴┘└┘└─┘┴ ┴┴ ┴┘└┘\n╭➞\x1b[31m Ctrl+C\x1b[0m: Exit game.\n┼───────────────────┬\n";
+const footerBox = "┴───────────────────┴";
+const footerGuessBox = "┼───────────────────┴";
 const inputFlag = "╰➞ Guess: ";
+const playAgain = 'Press ENTER to play again.';
 const guiMan = [
   "\x1b[5m\x1b[32m😎\x1b[0m",
   "\x1b[32m😄\x1b[0m",
@@ -30,10 +25,23 @@ const guiMan = [
   "\x1b[31m😭\x1b[0m",
   "\x1b[31m😵\x1b[0m"
 ];
-const congratulationsFlag = "  You found it!" + "\t" + guiMan[0] + "\n";
-const apologyFlag = "  Try again!" + "\t" + guiMan[7] + "\n";
+const winnerFlag = "  You found it!" + "\t" + guiMan[0] + "\n";
+const loserFlag = "  Try again!" + "\t" + guiMan[7] + "\n";
 
 /** FUNCTIONS */
+
+/** setNewGame
+ * 
+ *  Resets game variables
+ * 
+ */
+
+let setNewGame = () => {
+  findWord = Math.floor(Math.random() * maxWords);
+  mysteryWord = wordBank[findWord];
+  hiddenWord = mysteryWord.split("").map(() => "*");
+  countGuesses = 1;
+};
 
 /** print
  *
@@ -49,18 +57,9 @@ const print = message => console.log(message);
  *  Print the rounds and the wins
  *
  */
-const printScore = () => {
-  print(
-    "  Rounds:\x1b[33m " +
-      rounds +
-      "\x1b[0m" +
-      "; Wins:\x1b[32m " +
-      wins +
-      "\x1b[0m\n"
-  );
-};
+const printScore = () => print("  Rounds:\x1b[33m " + rounds + "\x1b[0m" + "; Wins:\x1b[32m " + wins + "\x1b[0m\n");
 
-/** askForInput (#)
+/** askForInput
  *
  *  Using readline-sync library, reads input from the player and conditions a one character string.
  *
@@ -80,7 +79,7 @@ const askForInput = () => {
   }
 };
 
-/** wordFounded
+/** hasWordBeenDiscovered
  *
  *  Searches for stars ('*') in a given word; meaning the word with stars (* * R *) is not a founded word.
  *
@@ -90,11 +89,10 @@ const askForInput = () => {
  *  @returns {boolean} true if the word has been found, false if the word hasn't  been found.
  *
  */
-const wordFounded = word => {
+const hasWordBeenDiscovered = word => {
   const hasStar = word.find(hasStar => {
     return hasStar === "*";
   });
-
   if (hasStar === "*") {
     return false;
   } else {
@@ -102,7 +100,7 @@ const wordFounded = word => {
   }
 };
 
-/** matchWord
+/** searchLetterInWord
  *
  *  Discovers the posible existence of a letter in the hiddenWord, exchanging the star (*) for the founded letter.
  *  If the letter isn't found countGuesses increments by 1.
@@ -114,20 +112,18 @@ const wordFounded = word => {
  *  @returns {undefined} Action is taken and variables modified, a return value isn't necessary.
  *
  */
-const matchWord = (letter, word) => {
+const searchLetterInWord = (letter, word) => {
   mysteryWord.split("").forEach((explicitWordLetter, letterPosition) => {
     if (explicitWordLetter === letter) word[letterPosition] = letter;
   });
-
   const checkGuesses = word.find(wordLetter => {
     return wordLetter === letter;
   });
   if (!checkGuesses) countGuesses += 1;
-
   return;
 };
 
-/** Game
+/** gameLoop (# - Remake)
  *
  *  Main game functionality; prints instruction/informative flags, resets the game if player wins,
  *  finds the player's letter in the hidenWord (if exist), keep record of the guesse made by the player.
@@ -135,54 +131,38 @@ const matchWord = (letter, word) => {
  */
 function gameLoop() {
   while (true) {
-    print(welcomeFlag);
-    print(headerGUI);
-
-    if (wordFounded(hiddenWord)) {
-      print(congratulationsFlag);
+    print(clearScreen);
+    print(headerBox);
+    if (hasWordBeenDiscovered(hiddenWord)) {
+      print(winnerFlag);
       print("\t\x1b[34m" + hiddenWord.join(" ").toUpperCase() + "\x1b[0m\n");
-
-      /** RESET GAME */
-      findWord = Math.floor(Math.random() * maxWords);
-      mysteryWord = wordBank[findWord];
-      hiddenWord = mysteryWord.split("").map(() => "*");
       rounds += 1;
       wins += 1;
-      countGuesses = 1;
       printScore();
-      print(footerFlat);
-      prompt.question('Press ENTER to play again.', {hideEchoBack: true, mask: ''});
-      print(clearScreen);
+      print(footerBox);
+      prompt.question(playAgain, {hideEchoBack: true, mask: ''});
+      setNewGame();
       gameLoop();
-      /** */
     } else {
-      print(
-        "  " +
-          hiddenWord.join(" ").toUpperCase() +
-          "\t" +
-          guiMan[countGuesses] +
-          "\n"
-      );
+      print("  " + hiddenWord.join(" ").toUpperCase() + "\t" + guiMan[countGuesses] + "\n");
     }
-    print(footerGuess);
+    print(footerGuessBox);
     if (countGuesses <= 6) {
       const letter = askForInput();
-      matchWord(letter, hiddenWord);
+      searchLetterInWord(letter, hiddenWord);
     } else {
-      rounds += 1;
+      print(clearScreen);
       break;
     }
-    print(clearScreen);
   }
 }
 
 /** GAME LOOP */
-print(clearScreen);
+setNewGame();
 gameLoop();
-print(clearScreen);
-print(welcomeFlag);
-print(headerGUI);
-print(apologyFlag);
+print(headerBox);
+print(loserFlag);
 print("\t\x1b[34m " + mysteryWord.toUpperCase() + "\x1b[0m\n");
+rounds += 1;
 printScore();
-print(footerFlat);
+print(footerBox);
