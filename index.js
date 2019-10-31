@@ -118,9 +118,9 @@ const searchLetterInWord = (letter, word) => {
   });
   let findLetter = mysteryWord.split("").find(wordLetter => wordLetter === letter);  
   if(!findLetter){
-    if(!guessLetters.find(guessLetter => guessLetter === "\x1b[31m"+letter+"\x1b[0m")){    
+    if(!guessLetters.find(guessLetter => guessLetter === "\x1b[31m"+letter.toUpperCase()+"\x1b[0m")){    
       countGuesses += 1;
-      guessLetters.push("\x1b[31m"+letter+"\x1b[0m");
+      guessLetters.push("\x1b[31m"+letter.toUpperCase()+"\x1b[0m");
       return " :: \x1b[31m" + letter.toUpperCase() + '\x1b[34m is not in the word\x1b[0m ::';
     }
     return ' :: \x1b[34mYou already guessed \x1b[33m' + letter.toUpperCase() + '\x1b[0m ::';
@@ -167,12 +167,12 @@ let gameLoop = () => {
       if(hasWordBeenFound(hiddenWord)){
         rounds += 1; wins += 1;
         drawBox(hiddenWord, winnerFlag);
-        print("Guesses: [" + guessLetters.join(", ") + "]");
+        print(" [" + guessLetters.join(", ") + "]");
         setNewGame();
         prompt.question(continueGame, {hideEchoBack: true, mask: ''});
       }else{
         drawBox(hiddenWord);
-        print("Guesses: [" + guessLetters.join(", ") + "]");
+        print(" [" + guessLetters.join(", ") + "]");
         const letter = askForInput();
         if(letter){
           print(searchLetterInWord(letter, hiddenWord));
@@ -184,7 +184,7 @@ let gameLoop = () => {
     }else{
       rounds += 1;
       drawBox(mysteryWord.split(""), loserFlag);
-      print("Guesses: [" + guessLetters.join(", ") + "]");
+      print(" [" + guessLetters.join(", ") + "]");
       break;
     }
   }
