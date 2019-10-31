@@ -163,7 +163,6 @@ const drawBox = (word, flag) => {
 let gameLoop = () => {
   while(true){
     print(clearScreen);
-    print(mysteryWord);
     if(countGuesses <= 6){
       if(hasWordBeenFound(hiddenWord)){
         rounds += 1; wins += 1;
