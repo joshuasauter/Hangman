@@ -11,10 +11,12 @@ let wins = 0;
 
 /** FLAGS & UI */
 const clearScreen = "\u001B[2J\u001B[0;0f";
-const headerBox = "┬ ┬┌─┐┌┐┌┌─┐┌┬┐┌─┐┌┐┌\n├─┤├─┤││││ ┬│││├─┤│││\n┴ ┴┴ ┴┘└┘└─┘┴ ┴┴ ┴┘└┘\n─➞\x1b[31m Ctrl+C\x1b[0m: Exit game.\n┬───────────────────┬\n";
+const headerBox = "┬ ┬┌─┐┌┐┌┌─┐┌┬┐┌─┐┌┐┌\n├─┤├─┤││││ ┬│││├─┤│││\n┴ ┴┴ ┴┘└┘└─┘┴ ┴┴ ┴┘└┘\n─────────────────────\n─➞\x1b[31m Ctrl+C\x1b[0m: Exit game.\n┬───────────────────┬\n";
 const footerBox = "┴───────────────────┴";
-const inputFlag = "─➞ Take a guess: ";
+const inputFlag = " guess:: ";
 const continueGame = 'Press ENTER to continue.';
+const invalidCharacter = ' \x1b[34mInvalid character\x1b[0m';
+let ordinalNumber = '';
 const guiMan = [
   "\x1b[5m\x1b[32m😎\x1b[0m",
   "\x1b[32m😄\x1b[0m",
@@ -25,8 +27,8 @@ const guiMan = [
   "\x1b[31m😭\x1b[0m",
   "\x1b[31m😵\x1b[0m"
 ];
-const winnerFlag = "  You found it!\t" + guiMan[0] + "\n";
-const loserFlag = "  Try again!\t" + guiMan[7] + "\n";
+const winnerFlag = "\tWell done!\n";
+const loserFlag = "\tTry Again!\n";
 
 /** FUNCTIONS */
 
@@ -37,7 +39,7 @@ const loserFlag = "  Try again!\t" + guiMan[7] + "\n";
  */
 let setNewGame = () => {
   findWord = Math.floor(Math.random() * maxWords);
-  mysteryWord = wordBank[findWord];
+  mysteryWord = wordBank[findWord].toLowerCase();
   hiddenWord = mysteryWord.split("").map(() => "#");
   countGuesses = 1;
   guessLetters = [];
@@ -67,12 +69,27 @@ const score = () => print("  Rounds:\x1b[33m " + rounds + "\x1b[0m" + "; Wins:\x
  *
  */
 const askForInput = () => {
-  const input = prompt.question(inputFlag);
-  if (/[a-zA-Z]/.test(input)) {
+  switch(countGuesses){
+    case 1:
+      ordinalNumber = countGuesses + "st";
+      break;
+    case 2:
+        ordinalNumber = countGuesses + "nd";
+      break;
+    case 3:
+        ordinalNumber = countGuesses + "rd";
+      break;
+    default:
+        ordinalNumber = countGuesses + "th";
+  }
+  const input = prompt.question(ordinalNumber + inputFlag);
+  const validate = text => /[a-zA-Z]/.test(text);
+  if (validate(input)) {
     if (input.length === 1) {
       return input.toLowerCase();
     } else {
-      return input[0].toLowerCase();
+      if(validate(input[0]))
+        return input[0].toLowerCase(); 
     }
   } else {
     return '';
@@ -109,7 +126,7 @@ const hasWordBeenFound = word => {
  *  @param {array} word; Each value is a letter, of mysteryWord.lenght size, each letter has been replaced
  *                       with a star (#) to show the player.
  *
- *  @returns {undefined} Action is taken and variables modified, a return value isn't necessary.
+ *  @returns {string} Feedback to the user according to action.
  *
  */
 const searchLetterInWord = (letter, word) => {
@@ -139,19 +156,26 @@ const searchLetterInWord = (letter, word) => {
  *
  */
 const drawBox = (word, flag) => {
-  print(headerBox);
-  if(flag) print(flag);
+  let face = countGuesses;
+  if(flag){
+    if(hasWordBeenFound(word)){
+      face = 0;
+    }else{
+      face = 7;
+      word = mysteryWord.split("");
+    }
+  }
   const newWord = word.reduce((colorWord, letter) => {
     letter !== '#'
       ? colorWord.push('\x1b[32m'+letter.toUpperCase()+'\x1b[0m')
       : colorWord.push('#');
     return colorWord;
   },[]);
-  const icon = !flag ? guiMan[countGuesses] : '';
-  const space = !flag ? " " : "\t";
-  print(space + newWord.join(" ") + "\t" + icon + "\n");
-  if(flag) score();
+  print(headerBox);
+  print(" " + newWord.join(" ") + "\t" + guiMan[face] + "\n");
+  if(flag){ print(flag); score(); }
   print(footerBox);
+  print("Guesses:[" + guessLetters.join(",") + "]\n─────────────────────");
 };
 
 /** gameLoop
@@ -167,24 +191,16 @@ let gameLoop = () => {
       if(hasWordBeenFound(hiddenWord)){
         rounds += 1; wins += 1;
         drawBox(hiddenWord, winnerFlag);
-        print(" [" + guessLetters.join(", ") + "]");
         setNewGame();
-        prompt.question(continueGame, {hideEchoBack: true, mask: ''});
       }else{
         drawBox(hiddenWord);
-        print(" [" + guessLetters.join(", ") + "]");
         const letter = askForInput();
-        if(letter){
-          print(searchLetterInWord(letter, hiddenWord));
-        }else{
-          print(' \x1b[34mInvalid character\x1b[0m');
-        }
-        prompt.question(continueGame, {hideEchoBack: true, mask: ''});
+        letter ? print(searchLetterInWord(letter, hiddenWord)) : print(invalidCharacter);
       }
+      prompt.question(continueGame, {hideEchoBack: true, mask: ''});
     }else{
       rounds += 1;
-      drawBox(mysteryWord.split(""), loserFlag);
-      print(" [" + guessLetters.join(", ") + "]");
+      drawBox(hiddenWord, loserFlag);
       break;
     }
   }
