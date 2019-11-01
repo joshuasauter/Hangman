@@ -1,8 +1,6 @@
 # Hangman
 
-Hangman: Simple word guessing game!
-
-Simple hangman game played against the computer, written in `Node.js`
+Simple hangman game, player vs computer; written with `Node.js`
 
 > Hangman is a paper and pencil guessing game for two or more players.
 > One player thinks of a word, phrase or sentence and the other(s) tries
@@ -11,8 +9,14 @@ Simple hangman game played against the computer, written in `Node.js`
 ---
 
 <p align="center">
-  <img src="https://github.com/roramigator/Hangman/blob/master/preview/hangman.png" alt="preview"/>
+  <img src="https://github.com/roramigator/Hangman/blob/master/preview/preview.jpg" alt="preview"/>
 </p>
+
+### Play
+
+- Clone the repository `git clone https://github.com/roramigator/Hangman`
+- Install dependencies (inside folder) `npm install`
+- Run the game `node .`
 
 ### Rules
 
