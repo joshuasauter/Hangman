@@ -201,7 +201,7 @@ let gameLoop = () => {
     }else{
       rounds += 1;
       drawBox(hiddenWord, loserFlag);
-      break;
+      setNewGame();
     }
   }
 };
